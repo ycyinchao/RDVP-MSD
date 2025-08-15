@@ -81,11 +81,11 @@ The quantitative results will be save in `./res/prediction_RDVP_MSD/log.txt`
 
 The more results of evaluation are also in [Google Drive](https://drive.google.com/file/d/1hXv3FRA-5q3IdZIji6a5u76P8PTpZi0Y/view?usp=sharing).
 
-Demo
+## Demo
 
  We further prepare a [jupyter notebook demo](https://github.com/ycyinchao/RDVP-MSD/blob/main/demo.ipynb) for visualization.
  1. Complete the following steps in the shell before opening the jupyter notebook. \
- The virtualenv environment named RDVP-MSD needs to be created first following [Quick Start](#Create and activate conda environment).
+ The virtualenv environment named RDVP-MSD needs to be created first following [Create and activate conda environment](#Create and activate conda environment).
 ```
 pip install notebook 
 pip install ipykernel ipywidgets
@@ -93,7 +93,7 @@ python -m ipykernel install --user --name RDVP-MSD
 ```
  2. Open demo.ipynb and select the '-' kernel in the running notebook.
 
-TO-DO LIST
+## TO-DO LIST
 
 - [x] Update datasets and implementation scripts
 - [x] Demo and Codes
