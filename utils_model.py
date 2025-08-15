@@ -1,4 +1,3 @@
-from asyncio import wait
 import clip
 import torch
 import cv2
@@ -85,10 +84,10 @@ def get_mask(pil_img, textfg_phrase_list,textfg_word_list, sam_predictor, clip_m
                     side = int(sm_norm_fg_n.shape[0] ** 0.5)
                     sm_norm_fg_n = sm_norm_fg_n.reshape(1, 1, side, side)
                     map_fg = torch.nn.functional.interpolate(sm_norm_fg_n, (ori_image.shape[0], ori_image.shape[1]), mode='bilinear').squeeze()
-                    plot_image_with_bboxes_and_points(cur_image, visualize_save_path + img_path.split("/")[-1][:-4] + '_mapFG_' + str(j)+str(n) + '.jpg',bbox=bboxes, points=p_fg_fg, labels=l_fg_fg.tolist(), mask=map_fg.cpu().numpy())
+                    plot_image_with_bboxes_and_points(cur_image,bbox=bboxes, points=p_fg_fg, labels=l_fg_fg.tolist(), mask=map_fg.cpu().numpy(),save_path=visualize_save_path + img_path.split("/")[-1][:-4] + '_mapFG_' + str(j)+str(n) + '.jpg',show=True)
                     sm_norm_bg_n = sm_norm_bg_n.reshape(1, 1, side, side)
                     map_bg = torch.nn.functional.interpolate(sm_norm_bg_n, (ori_image.shape[0], ori_image.shape[1]), mode='bilinear').squeeze()
-                    plot_image_with_bboxes_and_points(cur_image, visualize_save_path + img_path.split("/")[-1][:-4] + '_mapBG_' + str(j)+str(n) + '.jpg',bbox=bboxes, points=p_bg_bg, labels=l_bg_bg.tolist(), mask=map_bg.cpu().numpy())
+                    plot_image_with_bboxes_and_points(cur_image,bbox=bboxes, points=p_bg_bg, labels=l_bg_bg.tolist(), mask=map_bg.cpu().numpy(),save_path=visualize_save_path + img_path.split("/")[-1][:-4] + '_mapBG_' + str(j)+str(n) + '.jpg',show=True)
 
                     # Inference SAM with points from CLIP Surgery
                     if args.post_mode =='MaxIOUBoxSAMInput':
@@ -103,7 +102,7 @@ def get_mask(pil_img, textfg_phrase_list,textfg_word_list, sam_predictor, clip_m
                         mask = mask_logit_origin > sam_predictor.model.mask_threshold
 
 
-                        #get bbox （在后续迭代中，使用前一次迭代的mask通过绘制边界框来指导分割，这在后处理中是可行的。这里作者选择与mask具有最高交并比iou值的框作为选择）
+
                         contours, _ = cv2.findContours(mask.copy().astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE) # cv2.RETR_EXTERNAL：只检测最外层的轮廓;
 
                         if len(contours)==0:
@@ -137,13 +136,13 @@ def get_mask(pil_img, textfg_phrase_list,textfg_word_list, sam_predictor, clip_m
                             bboxes[3] = min(mask_logit_origin.shape[0], bboxes[3])
 
                         if n==0:
-                            plot_image_with_bboxes_and_points(cur_image,visualize_save_path + img_path.split("/")[-1][:-4] + '_' + str(
-                                                              j)+str(n) + '.jpg', bboxes, points, labels
-                                                          , textfg_phrase_list[j], textbg_phrase_list[j], mask=mask)
+                            plot_image_with_bboxes_and_points(cur_image, bboxes, points, labels
+                                                          , textfg_phrase_list[j], textbg_phrase_list[j], mask=mask,save_path=visualize_save_path + img_path.split("/")[-1][:-4] + '_' + str(
+                                                              j)+str(n) + '.jpg',show=True)
                         else:
-                            plot_image_with_bboxes_and_points(cur_image,visualize_save_path + img_path.split("/")[-1][:-4] + '_' + str(
-                                                              j)+str(n) + '.jpg', bboxes, points, labels
-                                                          , textfg_word_list[j], textbg_word_list[j], mask=mask)
+                            plot_image_with_bboxes_and_points(cur_image, bboxes, points, labels
+                                                          , textfg_word_list[j], textbg_word_list[j], mask=mask,save_path=visualize_save_path + img_path.split("/")[-1][:-4] + '_' + str(
+                                                              j)+str(n) + '.jpg',show=True)
 
 
                     mask_l.append(mask)

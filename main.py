@@ -1,22 +1,21 @@
 import logging
-
 import torch
 import cv2
 import numpy as np
 from PIL import Image
-from  matplotlib import pyplot as plt
 import argparse
 import yaml
+import os
 
 from tools import plot_image_with_bboxes_and_points
 from utils_model import get_text_from_img, get_mask, fuse_mask, DotDict
-from utils_model import get_edge_img, printd, mkdir
-import os
+from utils_model import printd, mkdir
+
 
 ## configs
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', default='config/CAMO_LLaVA1.5.yaml')
+    parser.add_argument('--config', default='config/COD10K_LLaVA1.5.yaml')
     # parser.add_argument('--visualization', default='False')
     parser.add_argument('--save_path', default='./res/prediction_RDVP_MSD/')
 
@@ -26,7 +25,6 @@ args = parser.parse_args()
 config_name = args.config.split("/")[-1][:-5]
 save_path_pred_dir = f'{args.save_path}/{config_name}/'
 mkdir(save_path_pred_dir)
-
 visualize_save_path = f'{args.save_path}/visualize/{config_name}/'
 mkdir(visualize_save_path)
 
@@ -51,7 +49,6 @@ printd(f"dataset size:\t {len(filenames)}")
 # sam.to(device=device)
 # sam_predictor = SamPredictor(sam)
 from segment_anything_hq import sam_model_registry, SamPredictor
-
 import clip
 sam = sam_model_registry[config['sam_model_type']](checkpoint=config['sam_checkpoint'])
 sam.to(device=device)
@@ -59,8 +56,6 @@ sam_predictor = SamPredictor(sam)
 clip_params={ 'attn_qkv_strategy':config['clip_attn_qkv_strategy']}
 clip_model, _ = clip.load(config['clip_model'], device=device, params=clip_params)
 clip_model.eval()
-
-# VLM
 llm_dict=None
 if config['llm']=='blip':
     from lavis.models import load_model_and_preprocess
@@ -119,7 +114,7 @@ for s_i, img_name in zip(range(data_len), filenames):
     # img_path = './test_my/images/camourflage_01194.jpg'
     pil_img = Image.open(img_path).convert("RGB")
 
-    ## infer GenSAM
+    ## infer RDVP-MSD
     textfg_phrase_list, textbg_phrase_list,textfg_word_list, textbg_word_list,bbox_ori_list = get_text_from_img(pil_img, config['prompt_q'], llm_dict,
                                       config['use_gene_prompt'], config['clip_use_bg_text'], DotDict(config))
     print(f'iter 0 text:\t{textfg_phrase_list}, {textbg_phrase_list}')
@@ -146,7 +141,7 @@ for s_i, img_name in zip(range(data_len), filenames):
                                            bbox_ori_list=bbox_ori_list,)
 
     vis_mask_acc, vis_mask_logit_acc = fuse_mask(mask_logit_origin_l, 
-                                                 sam_predictor.model.mask_threshold) # fuse masks from different iterations vis_mask_acc中的值只有0和1
+                                                 sam_predictor.model.mask_threshold)
 
 
     # get metric of mask closest to fused mask 

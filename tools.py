@@ -1,13 +1,15 @@
 import os
 
 import matplotlib
-matplotlib.use('Agg')  # 使用非交互式的 Agg 后端
+from IPython.core.display_functions import display
+
+matplotlib.use('Agg')
 
 import numpy as np
 import matplotlib.pyplot as plt
 
 # def save_heatmap(data, save_path='./res/vis_temp.png', cmap='hot'):
-def save_heatmap(image, save_path='./res/vis_save_heatmap.png', cmap=None):# TODO：rgb格式：matplotlib.pyplot as plt和PIL.Image；bgr格式：cv2
+def save_heatmap(image, save_path='./res/vis_save_heatmap.png', cmap=None):
     """
     生成热图并保存为 PNG 文件。
 
@@ -97,54 +99,106 @@ def save_points_on_image(image, points, labels, save_path='./res/vis_save_points
 
 
 
-def plot_image_with_bboxes_and_points(cur_image, visualize_save_path, bbox=None, points=None, labels=None, word_fg=None, word_bg=None, mask=None):
-    """
-    在RGB图像上绘制边界框及前景/背景点，并显示mask，最终保存图像，并在左下角添加前景和背景的描述文字。
+# def plot_image_with_bboxes_and_points(cur_image, visualize_save_path, bbox=None, points=None, labels=None, word_fg=None, word_bg=None, mask=None):
+#     """
+#     在RGB图像上绘制边界框及前景/背景点，并显示mask，最终保存图像，并在左下角添加前景和背景的描述文字。
+#
+#     Parameters:
+#     - cur_image (ndarray): RGB图像，形状为 (H, W, 3)
+#     - bbox (ndarray): 边界框，格式为 [x_min, y_min, x_max, y_max]
+#     - points (list): 样本点列表，每个点为 [x, y]，表示样本的坐标
+#     - labels (list): 标签列表，与 points 对应，1 表示前景，0 表示背景
+#     - visualize_save_path (str): 图像保存路径的文件夹
+#     - word_fg (str): 前景描述文本
+#     - word_bg (str): 背景描述文本
+#     - mask (ndarray): 二值化掩膜，形状为 (H, W)，表示感兴趣的区域
+#     """
+#     # 显示图像
+#     plt.imshow(cur_image)
+#     ax = plt.gca()
+#
+#     if bbox is not None:
+#         # 绘制边界框
+#         x_min, y_min, x_max, y_max = bbox
+#         rect = plt.Rectangle((x_min, y_min), x_max - x_min, y_max - y_min,
+#                              linewidth=2, edgecolor='yellow', facecolor='none')
+#         ax.add_patch(rect)
+#
+#     if points is not None and labels is not None:
+#         # 绘制前景和背景点
+#         for pt, label in zip(points, labels):
+#             x, y = pt
+#             color = 'red' if label == 1 else 'blue'
+#             plt.scatter(x, y, color=color, s=10, marker='o')  # 10是点的大小，marker='o'表示圆点
+#
+#     # 如果提供了mask，将其显示在图像上
+#     if mask is not None:
+#         # 使用imshow叠加mask，设置alpha透明度
+#         plt.imshow(mask, cmap='jet', alpha=0.5)  # alpha控制透明度，0.5表示半透明
+#
+#     if word_bg and word_fg:
+#         # 在左下角添加前景和背景描述文本
+#         plt.text(10, cur_image.shape[0] - 30, f"Foreground: {word_fg}", color='lime', fontsize=12, weight='bold')
+#         plt.text(10, cur_image.shape[0] - 60, f"Background: {word_bg}", color='cyan', fontsize=12, weight='bold')
+#
+#     # 不显示坐标轴
+#     plt.axis('off')
+#
+#     # 保存图像
+#     plt.savefig(visualize_save_path, format='jpg', dpi=300, bbox_inches='tight')
+#     plt.close()  # 关闭当前图形，避免内存溢出
+#
+#     print(f"Image saved to: {visualize_save_path}")
 
-    Parameters:
-    - cur_image (ndarray): RGB图像，形状为 (H, W, 3)
-    - bbox (ndarray): 边界框，格式为 [x_min, y_min, x_max, y_max]
-    - points (list): 样本点列表，每个点为 [x, y]，表示样本的坐标
-    - labels (list): 标签列表，与 points 对应，1 表示前景，0 表示背景
-    - visualize_save_path (str): 图像保存路径的文件夹
-    - word_fg (str): 前景描述文本
-    - word_bg (str): 背景描述文本
-    - mask (ndarray): 二值化掩膜，形状为 (H, W)，表示感兴趣的区域
-    """
-    # 显示图像
-    plt.imshow(cur_image)
-    ax = plt.gca()
 
+def plot_image_with_bboxes_and_points(
+    cur_image,
+    bbox=None, points=None, labels=None,
+    word_fg=None, word_bg=None,
+    mask=None,
+    save_path=None,   # 想保存就给路径；不想保存就留 None
+    show=True         # 想显示就 True
+):
+    # 1) 明确创建 figure/ax
+    fig, ax = plt.subplots(figsize=(6, 6))
+    ax.imshow(cur_image)
+
+    # 2) 画 bbox
     if bbox is not None:
-        # 绘制边界框
         x_min, y_min, x_max, y_max = bbox
-        rect = plt.Rectangle((x_min, y_min), x_max - x_min, y_max - y_min,
-                             linewidth=2, edgecolor='yellow', facecolor='none')
+        rect = plt.Rectangle(
+            (x_min, y_min), x_max - x_min, y_max - y_min,
+            linewidth=2, edgecolor='yellow', facecolor='none'
+        )
         ax.add_patch(rect)
 
+    # 3) 画点
     if points is not None and labels is not None:
-        # 绘制前景和背景点
         for pt, label in zip(points, labels):
             x, y = pt
             color = 'red' if label == 1 else 'blue'
-            plt.scatter(x, y, color=color, s=10, marker='o')  # 10是点的大小，marker='o'表示圆点
+            ax.scatter(x, y, color=color, s=10, marker='o')
 
-    # 如果提供了mask，将其显示在图像上
+    # 4) 叠加 mask
     if mask is not None:
-        # 使用imshow叠加mask，设置alpha透明度
-        plt.imshow(mask, cmap='jet', alpha=0.5)  # alpha控制透明度，0.5表示半透明
+        ax.imshow(mask, cmap='jet', alpha=0.5)
 
-    if word_bg and word_fg:
-        # 在左下角添加前景和背景描述文本
-        plt.text(10, cur_image.shape[0] - 30, f"Foreground: {word_fg}", color='lime', fontsize=12, weight='bold')
-        plt.text(10, cur_image.shape[0] - 60, f"Background: {word_bg}", color='cyan', fontsize=12, weight='bold')
+    # 5) 文本（你那边传的是 [word, phrase] 列表，也能显示；想更精确可改成 str）
+    if word_bg is not None and word_fg is not None:
+        ax.text(10, cur_image.shape[0] - 30, f"Foreground: {word_fg}",
+                color='lime', fontsize=12, weight='bold')
+        ax.text(10, cur_image.shape[0] - 60, f"Background: {word_bg}",
+                color='cyan', fontsize=12, weight='bold')
 
-    # 不显示坐标轴
-    plt.axis('off')
+    ax.axis('off')
 
-    # 保存图像
-    plt.savefig(visualize_save_path, format='jpg', dpi=300, bbox_inches='tight')
-    plt.close()  # 关闭当前图形，避免内存溢出
+    # 6) 可选保存
+    if save_path is not None:
+        fig.savefig(save_path, dpi=300, bbox_inches='tight')
 
-    print(f"Image saved to: {visualize_save_path}")
+    # 7) 在 notebook 中用 display 显示，然后再关闭
+    if show:
+        display(fig)
+    plt.close(fig)
+
 

@@ -11,6 +11,7 @@ Shanghai University, University of the Chinese Academy of Sciences
 <a href='https://arxiv.org/abs/2506.06818'><img src='https://img.shields.io/badge/ArXiv-2506.06818-red' /></a> <a href='https://github.com/ycyinchao/RDVP-MSD/'><img src='https://img.shields.io/badge/Project-Page-Green'></a> <a href='#demo'><img src='https://img.shields.io/badge/Replicate-Demo-violet'></a>
 
 ## :rocket: 1. News
+* **[2025.8.15]** [Demo](#4. Demo) of RDVP-MSD is released.
 * **[2025.8.14]** the code of RDVP-MSD is released.
 * **[2025.8.14]** the results of the LLaVA1.5 version RDVP-MSD on multiple COS datasets are released.
 
@@ -56,7 +57,7 @@ cd ..
 # SAM-HQ
 pip install segment-anything-hq
 
-pip install opencv-python imageio ftfy urllib
+pip install opencv-python imageio ftfy
 ```
 
 ### 3.3 Test
@@ -80,13 +81,25 @@ The quantitative results will be save in `./res/prediction_RDVP_MSD/log.txt`
 
 The more results of evaluation are also in [Google Drive](https://drive.google.com/file/d/1hXv3FRA-5q3IdZIji6a5u76P8PTpZi0Y/view?usp=sharing).
 
+ ## 4. Demo
 
- ## 4. TO-DO LIST
+ We further prepare a [jupyter notebook demo](https://github.com/ycyinchao/RDVP-MSD/blob/main/demo.ipynb) for visualization.
+ 1. Complete the following steps in the shell before opening the jupyter notebook. \
+ The virtualenv environment named RDVP-MSD needs to be created first following [Quick Start](#3.2 Create and activate conda environment).
+```
+pip install notebook 
+pip install ipykernel ipywidgets
+python -m ipykernel install --user --name RDVP-MSD
+```
+ 2. Open demo.ipynb and select the '-' kernel in the running notebook.
+
+
+ ## 5. TO-DO LIST
 - [x] Update datasets and implementation scripts
-- [ ] Demo and Codes
+- [x] Demo and Codes
 
 
-## 5. Citation
+## 6. Citation
 
 If you find our work useful in your research, please consider citing:
 
@@ -99,11 +112,11 @@ If you find our work useful in your research, please consider citing:
 }
 ```
 
-## 6. License
+## 7. License
 
 The source code is free for research and education use only. Any commercial use should get formal permission first.
 
-##  7. :cupid: Acknowledgements
+##  8. :cupid: Acknowledgements
 
 - [SAM-HQ](https://github.com/SysCV/sam-hq)
 - [LLaVA](https://github.com/haotian-liu/LLaVA)
