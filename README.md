@@ -41,7 +41,7 @@ MSD-CoT progressively disentangles image captions to eliminate semantic ambiguit
 - **[CHAMELEON](https://www.polsl.pl/rau6/datasets/)**
 2. Put it in `../Dataset/TestDataset/`.
 
-### Create and activate conda environment
+### Environment
 
 ```bash
 # create and activate conda environment
@@ -85,7 +85,7 @@ The more results of evaluation are also in [Google Drive](https://drive.google.c
 
  We further prepare a [jupyter notebook demo](https://github.com/ycyinchao/RDVP-MSD/blob/main/demo.ipynb) for visualization.
  1. Complete the following steps in the shell before opening the jupyter notebook. \
- The virtualenv environment named RDVP-MSD needs to be created first following [Create and activate conda environment](#Create and activate conda environment).
+ The virtualenv environment named RDVP-MSD needs to be created first following [Environment](#Environment).
 ```
 pip install notebook 
 pip install ipykernel ipywidgets
